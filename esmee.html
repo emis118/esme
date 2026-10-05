@@ -65,17 +65,59 @@
       margin-top: 10px;
       background: #fff;
     }
+    .controles {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.flecha {
+  background: #f7b2b7;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  color: white;
+  font-weight: bold;
+  margin: 5px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: transform 0.2s, background 0.3s;
+}
+
+.flecha:hover {
+  background: #f28c8c;
+  transform: scale(1.1);
+}
+
   </style>
 </head>
 <body>
   <h1>🔒 Mensaje Bloqueado</h1>
 
   <!-- Juego Laberinto -->
-  <div class="card" id="laberintoCard">
-    <span class="check">✅</span>
-    <h2>Juego: Laberinto</h2>
-    <button onclick="iniciarLaberinto()">Ir al laberinto</button>
-    <canvas id="laberinto" width="200" height="200" style="display:none;"></canvas>
+  <!-- Juego Laberinto -->
+<div class="card" id="laberintoCard">
+  <span class="check">✅</span>
+  <h2>Juego: Laberinto</h2>
+  <button onclick="iniciarLaberinto()">Ir al laberinto</button>
+  <canvas id="laberinto" width="300" height="300" style="display:none;"></canvas>
+
+  <!-- Controles táctiles -->
+  <div class="controles">
+    <button onclick="moverTouch('up')" class="flecha arriba">⬆</button>
+    <div>
+      <button onclick="moverTouch('left')" class="flecha izquierda">⬅</button>
+      <button onclick="moverTouch('down')" class="flecha abajo">⬇</button>
+      <button onclick="moverTouch('right')" class="flecha derecha">➡</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
   </div>
 
   <!-- Otros juegos -->
@@ -179,22 +221,71 @@
     }
 
     // LABERINTO
-    let ctx, player, goal, walls;
-    function iniciarLaberinto() {
-      document.getElementById("laberinto").style.display = "block";
-      ctx = document.getElementById("laberinto").getContext("2d");
-      player = {x:10,y:10};
-      goal = {x:170,y:170};
-      // Paredes más delgadas y con espacios amplios
-      walls = [
-        {x:40,y:0,w:10,h:120},
-        {x:80,y:40,w:10,h:160},
-        {x:120,y:0,w:10,h:120},
-        {x:160,y:40,w:10,h:160}
-      ];
-      dibujar();
-      window.addEventListener("keydown", mover);
-    }
+let ctx, player, goal, walls;
+function iniciarLaberinto() {
+  document.getElementById("laberinto").style.display = "block";
+  ctx = document.getElementById("laberinto").getContext("2d");
+  player = {x:15,y:15}; // cuadrado inicial
+  goal = {x:255,y:255}; // meta al fondo
+
+  // Paredes más delgadas y con espacios amplios
+  walls = [
+    {x:60,y:0,w:15,h:200},
+    {x:120,y:40,w:15,h:260},
+    {x:180,y:0,w:15,h:200}
+  ];
+
+  dibujar();
+  window.addEventListener("keydown", mover);
+}
+
+function dibujar() {
+  ctx.clearRect(0,0,300,300);
+  // jugador
+  ctx.fillStyle="#f7b2b7"; 
+  ctx.fillRect(player.x, player.y, 15, 15);
+  // meta
+  ctx.fillStyle="#a3c9a8"; 
+  ctx.fillRect(goal.x, goal.y, 15, 15);
+  // paredes
+  ctx.fillStyle="#444";
+  walls.forEach(w=>ctx.fillRect(w.x,w.y,w.w,w.h));
+}
+
+function colision(nx,ny){
+  return walls.some(w =>
+    nx < w.x + w.w &&
+    nx + 15 > w.x &&
+    ny < w.y + w.h &&
+    ny + 15 > w.y
+  );
+}
+
+function mover(e) {
+  let nx=player.x, ny=player.y;
+  if(e.key==="ArrowUp") ny-=15;
+  if(e.key==="ArrowDown") ny+=15;
+  if(e.key==="ArrowLeft") nx-=15;
+  if(e.key==="ArrowRight") nx+=15;
+
+  // límites del canvas
+  if(nx<0||ny<0||nx>285||ny>285) return;
+  // colisión con paredes
+  if(colision(nx,ny)) return;
+
+  player.x=nx; player.y=ny;
+  dibujar();
+
+  // victoria
+  if(player.x===goal.x && player.y===goal.y){
+    alert("¡Ganaste el laberinto!");
+    marcar("laberintoCard");
+    window.removeEventListener("keydown", mover);
+  }
+}
+
+
+
 
     function dibujar() {
       ctx.clearRect(0,0,200,200);
@@ -354,6 +445,26 @@ function juego4() {
     marcar("juego4Card");
   } else {
     alert("Incorrecto.");
+  }
+}
+
+
+function moverTouch(dir){
+  let nx=player.x, ny=player.y;
+  if(dir==="up") ny-=15;
+  if(dir==="down") ny+=15;
+  if(dir==="left") nx-=15;
+  if(dir==="right") nx+=15;
+
+  if(nx<0||ny<0||nx>285||ny>285) return;
+  if(colision(nx,ny)) return;
+
+  player.x=nx; player.y=ny;
+  dibujar();
+
+  if(player.x===goal.x && player.y===goal.y){
+    alert("¡Ganaste el laberinto!");
+    marcar("laberintoCard");
   }
 }
 
