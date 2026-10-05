@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Desafíos Interactivos</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fdf6f0;
+      color: #444;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #a3c9a8;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin: 15px;
+      width: 320px;
+      text-align: center;
+      position: relative;
+    }
+    .check {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 20px;
+      color: green;
+      display: none;
+    }
+    button {
+      background: #f7b2b7;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 15px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #f28c8c;
+    }
+    #mensajeOculto {
+      display: none;
+      background: #a3c9a8;
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    canvas {
+      border: 2px solid #a3c9a8;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔒 Mensaje Bloqueado</h1>
+
+  <!-- Juego Laberinto -->
+  <div class="card" id="laberintoCard">
+    <span class="check">✅</span>
+    <h2>Juego: Laberinto</h2>
+    <button onclick="iniciarLaberinto()">Ir al laberinto</button>
+    <canvas id="laberinto" width="200" height="200" style="display:none;"></canvas>
+  </div>
+
+  <!-- Juego Sopa de Letras -->
+  <div class="card" id="sopaCard">
+    <span class="check">✅</span>
+    <h2>Juego: Sopa de letras</h2>
+    <button onclick="iniciarSopa()">Abrir sopa</button>
+    <div id="sopa" style="display:none;">
+      <p>Encuentra la palabra: <strong>IA</strong></p>
+      <pre>
+I A X Z
+Q W E R
+T Y U I
+O P L M
+      </pre>
+      <input type="text" id="sopaInput" placeholder="Escribe la palabra">
+      <button onclick="resolverSopa()">Probar</button>
+    </div>
+  </div>
+
+  <div id="mensajeOculto">
+    🎉 ¡Felicidades! Has desbloqueado el mensaje secreto:  
+    <br><br>
+    <strong>"La perseverancia abre todas las puertas."</strong>
+  </div>
+
+  <script>
+    let juegosCompletados = 0;
+
+    function verificarDesbloqueo() {
+      if (juegosCompletados >= 2) { // aquí pon el total de juegos/acertijos
+        document.getElementById("mensajeOculto").style.display = "block";
+      }
+    }
+
+    // LABERINTO
+    let ctx, player, goal;
+    function iniciarLaberinto() {
+      document.getElementById("laberinto").style.display = "block";
+      ctx = document.getElementById("laberinto").getContext("2d");
+      player = {x:10,y:10};
+      goal = {x:170,y:170};
+      dibujar();
+      window.addEventListener("keydown", mover);
+    }
+    function dibujar() {
+      ctx.clearRect(0,0,200,200);
+      ctx.fillStyle="#f7b2b7"; ctx.fillRect(player.x,player.y,20,20);
+      ctx.fillStyle="#a3c9a8"; ctx.fillRect(goal.x,goal.y,20,20);
+    }
+    function mover(e) {
+      if(e.key==="ArrowUp") player.y-=20;
+      if(e.key==="ArrowDown") player.y+=20;
+      if(e.key==="ArrowLeft") player.x-=20;
+      if(e.key==="ArrowRight") player.x+=20;
+      dibujar();
+      if(player.x===goal.x && player.y===goal.y){
+        alert("¡Ganaste el laberinto!");
+        document.querySelector("#laberintoCard .check").style.display="block";
+        juegosCompletados++;
+        verificarDesbloqueo();
+        window.removeEventListener("keydown", mover);
+      }
+    }
+
+    // SOPA DE LETRAS
+    function iniciarSopa(){
+      document.getElementById("sopa").style.display="block";
+    }
+    function resolverSopa(){
+      let resp=document.getElementById("sopaInput").value.toLowerCase();
+      if(resp==="ia"){
+        alert("¡Correcto!");
+        document.querySelector("#sopaCard .check").style.display="block";
+        juegosCompletados++;
+        verificarDesbloqueo();
+      } else alert("Incorrecto.");
+    }
+  </script>
+</body>
+</html>

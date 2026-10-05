@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Hola</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fdf6f0;
+      color: #444;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #a3c9a8;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin: 15px;
+      width: 320px;
+      text-align: center;
+      position: relative;
+    }
+    .check {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 20px;
+      color: green;
+      display: none;
+    }
+    button {
+      background: #f7b2b7;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 15px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #f28c8c;
+    }
+    #mensajeOculto {
+      display: none;
+      background: #a3c9a8;
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    canvas {
+      border: 2px solid #a3c9a8;
+      margin-top: 10px;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔒 Mensaje Bloqueado</h1>
+
+  <!-- Juego Laberinto -->
+  <div class="card" id="laberintoCard">
+    <span class="check">✅</span>
+    <h2>Juego: Laberinto</h2>
+    <button onclick="iniciarLaberinto()">Ir al laberinto</button>
+    <canvas id="laberinto" width="200" height="200" style="display:none;"></canvas>
+  </div>
+
+  <!-- Otros juegos -->
+  <div class="card" id="juego1Card">
+    <span class="check">✅</span>
+    <h2>Juego: Matemáticas</h2>
+    <p>Resuelve: (32 + 87 * 65 * (45 * 5))</p>
+    <input type="number" id="juego1">
+    <button onclick="juego1()">Probar</button>
+  </div>
+
+  <div class="card" id="juego2Card">
+    <span class="check">✅</span>
+    <h2>Juego: Historia</h2>
+    <p>¿En qué año cayó el Imperio Romano de Occidente?</p>
+    <input type="number" id="juego2">
+    <button onclick="juego2()">Probar</button>
+  </div>
+
+  <div class="card" id="juego3Card">
+    <span class="check">✅</span>
+    <h2>Juego: Cultura</h2>
+    <p>¿Cuál es el país con más islas del mundo?</p>
+    <input type="text" id="juego3">
+    <button onclick="juego3()">Probar</button>
+  </div>
+
+  <div class="card" id="juego4Card">
+    <span class="check">✅</span>
+    <h2>Juego: Secuencia</h2>
+    <p>Completa: 3, 9, 27, ?</p>
+    <input type="number" id="juego4">
+    <button onclick="juego4()">Probar</button>
+  </div>
+
+  <!-- Acertijos -->
+  <div class="card" id="acertijo1Card">
+    <span class="check">✅</span>
+    <h2>Acertijo 1</h2>
+    <p>Solamente pienso en el box ¿Quién soy?</p>
+    <input type="text" id="acertijo1">
+    <button onclick="acertijo1()">Responder</button>
+  </div>
+
+  <div class="card" id="acertijo2Card">
+    <span class="check">✅</span>
+    <h2>Acertijo 2</h2>
+    <p>Me acusaron de ratero y doy pena ¿Quién soy?</p>
+    <input type="text" id="acertijo2">
+    <button onclick="acertijo2()">Responder</button>
+  </div>
+
+  <div class="card" id="acertijo3Card">
+    <span class="check">✅</span>
+    <h2>Acertijo 3</h2>
+    <p>Casi no hablo pero ya toy viejo ¿Quién soy?</p>
+    <input type="text" id="acertijo3">
+    <button onclick="acertijo3()">Responder</button>
+  </div>
+
+  <div class="card" id="acertijo4Card">
+    <span class="check">✅</span>
+    <h2>Acertijo 4</h2>
+    <p>Soy la mas bonita ¿Quién soy?</p>
+    <input type="text" id="acertijo4">
+    <button onclick="acertijo4()">Responder</button>
+  </div>
+
+  <div class="card" id="acertijo5Card">
+    <span class="check">✅</span>
+    <h2>Acertijo 5</h2>
+    <p>Al chile todos me la pelan ¿Quién soy?</p>
+    <input type="text" id="acertijo5">
+    <button onclick="acertijo5()">Responder</button>
+  </div>
+
+  <div class="card" id="acertijo6Card">
+    <span class="check">✅</span>
+    <h2>Acertijo 6</h2>
+    <p>Me amas? </p>
+    <input type="text" id="acertijo6">
+    <button onclick="acertijo6()">Responder</button>
+  </div>
+
+  <div id="mensajeOculto">
+    Esooooooooooooooooo eres tuuuuu
+    <br><br>
+    <strong>"Tamooooooooooooooooooo💕💕💕"</strong>
+  </div>
+
+  <script>
+    let completados = 0;
+    const total = 11; // 4 juegos + laberinto + 6 acertijos
+
+    function marcar(id){
+      document.querySelector(`#${id} .check`).style.display="block";
+      completados++;
+      if(completados>=total){
+        document.getElementById("mensajeOculto").style.display="block";
+      }
+    }
+
+    // LABERINTO
+    let ctx, player, goal, walls;
+    function iniciarLaberinto() {
+      document.getElementById("laberinto").style.display = "block";
+      ctx = document.getElementById("laberinto").getContext("2d");
+      player = {x:10,y:10};
+      goal = {x:170,y:170};
+      // Paredes más delgadas y con espacios amplios
+      walls = [
+        {x:40,y:0,w:10,h:120},
+        {x:80,y:40,w:10,h:160},
+        {x:120,y:0,w:10,h:120},
+        {x:160,y:40,w:10,h:160}
+      ];
+      dibujar();
+      window.addEventListener("keydown", mover);
+    }
+
+    function dibujar() {
+      ctx.clearRect(0,0,200,200);
+      // jugador
+      ctx.fillStyle="#f7b2b7"; 
+      ctx.fillRect(player.x,player.y,20,20);
+      // meta
+      ctx.fillStyle="#a3c9a8"; 
+      ctx.fillRect(goal.x,goal.y,20,20);
+      // paredes
+      ctx.fillStyle="#444";
+      walls.forEach(w=>ctx.fillRect(w.x,w.y,w.w,w.h));
+    }
+
+    function colision(nx,ny){
+      return walls.some(w => 
+        nx < w.x + w.w &&
+        nx + 20 > w.x &&
+        ny < w.y + w.h &&
+        ny + 20 > w.y
+      );
+    }
+
+    function mover(e) {
+      let nx=player.x, ny=player.y;
+      if(e.key==="ArrowUp") ny-=20;
+      if(e.key==="ArrowDown") ny+=20;
+      if(e.key==="ArrowLeft") nx-=20;
+      if(e.key==="ArrowRight") nx+=20;
+
+      // límites del canvas
+      if(nx<0||ny<0||nx>180||ny>180) return;
+      // colisión con paredes
+      if(colision(nx,ny)) return;
+
+      player.x=nx; player.y=ny;
+      dibujar();
+
+      // victoria
+      if(player.x===goal.x && player.y===goal.y){
+        alert("¡Ganaste el laberinto!");
+        marcar("laberintoCard");
+        window.removeEventListener("keydown", mover);
+      }
+    }
+
+    // Acertijos
+function acertijo1(){ 
+  let resp = document.getElementById("acertijo1").value.toLowerCase().trim();
+
+  if(resp === "alejandro" || resp === "ale"){
+    alert("¡Correcto!");
+    marcar("acertijo1Card");
+  } else {
+    alert("Incorrecto.");
+  }
+}
+
+function acertijo2(){ 
+  let resp = document.getElementById("acertijo2").value.toLowerCase().trim();
+
+  if(resp === "aron"){
+    alert("¡Correcto!");
+    marcar("acertijo2Card");
+  } else {
+    alert("Incorrecto.");
+  }
+}
+
+function acertijo3(){ 
+  let resp = document.getElementById("acertijo3").value.toLowerCase().trim();
+
+  if(resp === "ema" || resp === "manuel"){
+    alert("¡Correcto!");
+    marcar("acertijo3Card");
+  } else {
+    alert("Incorrecto.");
+  }
+}
+
+function acertijo4(){ 
+  let resp = document.getElementById("acertijo4").value.toLowerCase().trim();
+
+  if(resp === "fatima" || resp === "fátima"){
+    alert("¡Correcto!");
+    marcar("acertijo4Card");
+  } else {
+    alert("Incorrecto.");
+  }
+}
+
+function acertijo5(){ 
+  let resp = document.getElementById("acertijo5").value.toLowerCase().trim();
+
+  if(resp === "emis"){
+    alert("¡Correcto!");
+    marcar("acertijo5Card");
+  } else {
+    alert("Incorrecto.");
+  }
+}
+
+function acertijo6(){ 
+  let resp = document.getElementById("acertijo6").value.toLowerCase().trim();
+
+  if(resp === "si" || resp === "sí"){
+    alert("¡Correcto!");
+    marcar("acertijo6Card");
+  } else {
+    alert("Incorrecto.");
+  }
+}
+
+
+
+
+
+
+    function juego1() {
+  let respuesta = document.getElementById("juego1").value;
+
+  if (respuesta == 1272407) {
+    alert("¡Correcto!");
+    marcar("juego1Card");
+  } else {
+    alert("Incorrecto.");
+  }
+}
+
+function juego2() {
+  let respuesta = document.getElementById("juego2").value;
+
+  if (respuesta == 476) {
+    alert("¡Correcto!");
+    marcar("juego2Card");
+  } else {
+    alert("Incorrecto.");
+  }
+}
+
+function juego3() {
+  let respuesta = document.getElementById("juego3").value.toLowerCase();
+
+  if (respuesta === "suecia") {
+    alert("¡Correcto!");
+    marcar("juego3Card");
+  } else {
+    alert("Incorrecto.");
+  }
+}
+
+function juego4() {
+  let respuesta = document.getElementById("juego4").value;
+
+  if (respuesta == 81) {
+    alert("¡Correcto!");
+    marcar("juego4Card");
+  } else {
+    alert("Incorrecto.");
+  }
+}
+
+  </script>
+
+
+
+
